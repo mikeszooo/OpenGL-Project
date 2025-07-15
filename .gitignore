@@ -1,0 +1,37 @@
+# Katalogi budowania
+build/
+cmake-build-*/
+
+# Pliki CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Binaria
+*.exe
+*.out
+*.app
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Ninja
+build.ninja
+.ninja_log
+.ninja_deps
+rules.ninja
+
+# CLion
+.idea/
+*.iml
+
+# Logi
+*.log
+
+# Inne tymczasowe pliki
+*.swp
+*.tmp
