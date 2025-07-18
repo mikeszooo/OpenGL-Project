@@ -12,7 +12,7 @@ Camera::Camera(const Map& map, glm::vec3 position, glm::vec3 worldUp, float yaw,
       yaw(yaw),
       pitch(pitch),
       front(glm::vec3(0.0f, 0.0f, -1.0f)),
-      movementSpeed(2.5f),
+      movementSpeed(3.5f),
       mouseSensitivity(0.1f)
 {
     updateCameraVectors();
@@ -100,7 +100,7 @@ bool Camera::checkCollision(const glm::vec3& newPosition) const {
 
     for (int x = 0; x < map.width; x++) {
         for (int z = 0; z < map.height; z++) {
-            if (map.map[x][z] == 1) {
+            if (map.map[z][x] == 1) {
                 glm::vec3 wallPos(x, 0, z);
                 if (checkCubeCollision(newPosition, wallPos)) {
                     return true;

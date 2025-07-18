@@ -29,5 +29,9 @@ add_executable(PROJEKTINZ main.cpp lib/glad/src/glad.c
         Camera.cpp
         Camera.h
         Map.cpp
-        Map.h)
+        Map.h
+        Enemy.cpp
+        Enemy.h
+        Gun.cpp
+        Gun.h)
 target_link_libraries(PROJEKTINZ glfw3.dll glm::glm)

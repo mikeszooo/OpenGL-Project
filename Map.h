@@ -27,6 +27,7 @@ public:
     int width;
     int height;
     unsigned int VBO,VAO;
+    bool Raycast(const glm::vec3& start, const glm::vec3& end, float& outHitDist) const;
 private:
 
 
