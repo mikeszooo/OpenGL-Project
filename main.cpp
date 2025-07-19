@@ -164,7 +164,7 @@ int main()
                  glm::vec3(34.0f, -0.25f, 55.0f),
                  shader);
 //GUN
-    Gun gun("D:/PROJEKTINZ/Textures/gun.png",camera.position,SCR_WIDTH,SCR_HEIGHT);
+    Gun gun("D:/PROJEKTINZ/Textures/gun.png","D:/PROJEKTINZ/Textures/crosshair.png",camera.position,SCR_WIDTH,SCR_HEIGHT);
     map.RenderMap();
     map.InitBuffers();
     enemy.InitBuffers();
