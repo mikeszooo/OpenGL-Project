@@ -3,11 +3,9 @@
 //
 
 #include "Texture.h"
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include <iostream>
-#include <string>
-#include "lib/stb_image.h"
 
 //Texture type - GL_RGB or GL_RGBA
 Texture::Texture(const char *fileName, GLenum textureType)

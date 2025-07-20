@@ -7,8 +7,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "lib/stb_image.h"
 #include "Texture.h"
 #include "Map.h"
 #include "Enemy.h"
@@ -19,7 +17,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-
+void HandleShooting(GLFWwindow* window,
+                    Gun& gun,
+                    std::vector<Enemy>& enemies,
+                    Map& map,
+                    glm::mat4 proj,
+                    glm::mat4 view,
+                    glm::vec3 cameraPos,
+                    float maxDistance);
+bool leftMousePressed = false;
 //Wymiary okna
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -149,23 +155,20 @@ int main()
     //TEXTURE
     Texture texture("D:/PROJEKTINZ/Textures/Sprite-0002.png", GL_RGBA);
 
-    Texture enemy1("D:/PROJEKTINZ/Textures/Enemy/Enemy1.png", GL_RGBA);
-    Texture enemy2("D:/PROJEKTINZ/Textures/Enemy/Enemy2.png", GL_RGBA);
-    Texture enemy3("D:/PROJEKTINZ/Textures/Enemy/Enemy3.png", GL_RGBA);
     shader.use();
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    std::vector<Texture> textures;
-    textures.push_back(enemy1);
-    textures.push_back(enemy2);
-    textures.push_back(enemy3);
 //
     Enemy enemy(
                  glm::vec3(34.0f, -0.25f, 55.0f),
                  shader);
+    std::vector<Enemy> enemies;
+    enemies.push_back(enemy);
 //GUN
     Gun gun("D:/PROJEKTINZ/Textures/gun.png","D:/PROJEKTINZ/Textures/crosshair.png",camera.position,SCR_WIDTH,SCR_HEIGHT);
+
     map.RenderMap();
+    //Bufory
     map.InitBuffers();
     enemy.InitBuffers();
     gun.InitBuffers();
@@ -175,6 +178,7 @@ int main()
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         processInput(window);
+
         //std::cout<< "Camera Position: " << camera.position.x << ", "
         // << camera.position.y << ", " << camera.position.z << std::endl;
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -212,6 +216,7 @@ int main()
         gun.RenderCrosshair(hudShader);
 
 
+        HandleShooting(window, gun, enemies,map, projection, view, camera.position, 100.0f);
         glfwSwapBuffers(window);
     }
     map.DeleteBuffers();
@@ -260,4 +265,35 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastY = (float)ypos;
 
     camera.processMouseMovement(xoffset, yoffset);
+}
+void HandleShooting(GLFWwindow* window,
+                    Gun& gun,
+                    std::vector<Enemy>& enemies,
+                    Map& map,
+                    glm::mat4 proj,
+                    glm::mat4 view,
+                    glm::vec3 cameraPos,
+                    float maxDistance)
+{
+    bool currentMouse = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    if (currentMouse && !leftMousePressed) {
+        // 1) Oblicz promień
+        gun.GetRayDirection(proj, view, cameraPos);
+        // 2) Sprawdź, gdzie bije w mur i obetnij zasięg
+        float wallDist;
+        if ( map.Raycast(cameraPos,
+                         cameraPos + gun.GetRayDir() * maxDistance,
+                         wallDist) )
+        {
+            maxDistance = wallDist;
+        }
+        // 3) Teraz szukaj trafienia wroga w ograniczonym zasięgu
+        Enemy* hitEnemy = nullptr;
+        if (gun.CheckEnemyHit(enemies, hitEnemy, maxDistance)) {
+            std::cout << "hit!" << std::endl;
+        } else {
+            std::cout << "miss!" << std::endl;
+        }
+    }
+    leftMousePressed = currentMouse;
 }

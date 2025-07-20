@@ -22,6 +22,7 @@ public:
     bool CanSee(const glm::vec3& playerPos, Map& map) const;
     void Update(const glm::vec3& playerPos, Map& map, float deltaTime);
     void ShootAt(const glm::vec3& playerPos);
+    glm::vec3 GetPosition() const {return position;}
 private:
     std::vector<Texture> textures;
     glm::vec3 position;

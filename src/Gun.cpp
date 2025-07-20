@@ -155,4 +155,54 @@ void Gun::RenderCrosshair(Shader &shader)
 
     glEnable(GL_DEPTH_TEST);
 }
+void Gun::GetRayDirection(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::vec3 cameraPos)
+{
+    float mouseX = static_cast<float>(SCR_WIDTH) *0.5f;
+    float mouseY = static_cast<float>(SCR_HEIGHT) *0.5f;
+
+    float x_ndc = 2.0f * (mouseX / (float)SCR_WIDTH)  - 1.0f;
+    float y_ndc = 1.0f - 2.0f * (mouseY / (float)SCR_HEIGHT);
+
+    glm::vec4 rayClip = glm::vec4(x_ndc, y_ndc, -1.0f, 1.0f);
+
+    glm::mat4 invProj = glm::inverse(projectionMatrix);
+    glm::vec4 rayEye  = invProj * rayClip;
+    rayEye.z = -1.0f; rayEye.w = 0.0f;
+
+    glm::mat4 invView = glm::inverse(viewMatrix);
+    glm::vec4 rayWorld4 = invView * rayEye;
+    rayStart = cameraPos;
+    rayDir = glm::normalize(glm::vec3(rayWorld4));
+    //std::cout << rayDir.x << " " << rayDir.y << " " << rayDir.z << std::endl;
+
+}
+bool Gun::CheckEnemyHit(const std::vector<Enemy>& enemies, Enemy*& hitEnemy, float maxDistance)
+{
+    float closestDistance = maxDistance;
+    hitEnemy = nullptr;
+
+    for (const auto& enemy : enemies) {
+        glm::vec3 enemyPos = enemy.GetPosition();
+        float enemyRadius = 0.3f;
+
+        glm::vec3 toEnemy = enemyPos - rayStart;
+        float projLength = glm::dot(toEnemy, rayDir);
+
+
+        if (projLength < 0) continue;
+
+
+        glm::vec3 closestPoint = rayStart + rayDir * projLength;
+        float distance = glm::length(enemyPos - closestPoint);
+
+
+        if (distance <= enemyRadius && projLength < closestDistance) {
+            closestDistance = projLength;
+            hitEnemy = const_cast<Enemy*>(&enemy);
+        }
+    }
+
+    return hitEnemy != nullptr;
+}
+
 

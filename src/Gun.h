@@ -9,6 +9,7 @@
 #include "glm/fwd.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "Shader.h"
+#include "Enemy.h"
 
 class Gun
 {
@@ -19,6 +20,9 @@ public:
     void InitBuffersCrosshair();
     void RenderCrosshair(Shader& shader);
     void PlayAnimation();
+    void GetRayDirection(glm::mat4 projectionMatrix, glm::mat4 viewMatrix,glm::vec3 cameraPos);
+    bool CheckEnemyHit(const std::vector<Enemy>& enemies, Enemy*& hitEnemy, float maxDistance);
+    glm::vec3 GetRayDir() const { return rayDir; }
 private:
     glm::vec3 pos;
     Texture texture;
@@ -26,6 +30,7 @@ private:
     unsigned int gunVAO, gunVBO, gunEBO;
     const unsigned int SCR_WIDTH, SCR_HEIGHT;
     unsigned int chVAO, chVBO, chEBO;
+    glm::vec3 rayDir, rayStart;
 };
 
 
